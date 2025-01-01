@@ -2,6 +2,10 @@ import { supabase } from "../db/connect.js";
 
 export const createAgent = async (req, res) => {
     const { first_name, last_name, email, phone, region } = req.body;
+  
+    if (!first_name || !last_name || !email || !phone || !region) {
+      return res.status(400).json({ error: "first_name, last_name, email, phone, region are required." });
+    }
 
     try {
         const { data, error } = await supabase
@@ -47,6 +51,29 @@ export const getAgents = async (req, res) => {
     }
 };
 
+export const getAgentsByID = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { data, error } = await supabase
+            .from("agents")
+            .select("*") // Fetch all agents
+            .eq("agent_id", id);
+
+        if (error) {
+            console.error("Supabase Error:", error);
+            return res.status(500).json({ error: "Failed to retrieve agents." });
+        }
+
+        // Return the list of agents
+        return res.status(200).json({
+            message: "Agents retrieved successfully!",
+            agents: data,
+        });
+    } catch (err) {
+        console.error("Error:", err.message);
+        return res.status(500).json({ error: "Failed to retrieve agents." });
+    }
+};
 
 export const updateAgent = async (req, res) => {
     const { id } = req.params;
