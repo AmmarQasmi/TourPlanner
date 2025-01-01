@@ -13,13 +13,6 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use(errorHandler());
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD:index.js
-=======
-// all routes go here
->>>>>>> 7b3495e83d74f68975c561a1f7e9e07168273404:Backend/index.js
->>>>>>> 1c906325af5a61d2400c7cb68863a3dd20fb1b9d
 
 app.use("/api/agents",agentRoute); 
 

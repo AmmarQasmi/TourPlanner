@@ -16,7 +16,9 @@ export const getAllClients = async (req,res) => {
     }
 };
 
-export const getClientById = async (req,res) => {};
+export const getClientById = async (req,res) => {
+    return res.status(200).json({message: 'Client found', Clinets: req.clinet});
+};
 
 export const createClient = async (req,res) => {};
 
