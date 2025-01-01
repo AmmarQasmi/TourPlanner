@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import errorHandler from "errorhandler";
 import agentRoute from "./Routes/agentRoute.js";
+import clientRouter from "./Routes/clientRoutes.js";
 const app = express();
 
 const PORT = 5000;
@@ -13,7 +14,9 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use(errorHandler());
 
+
 app.use("/api/agents",agentRoute); 
+app.use("/api/clients", clientRouter);
 
 
 app.listen(PORT, () => {
