@@ -6,8 +6,11 @@ const bookingRouter = Router();
 
 bookingRouter.post("/create", createBooking);
 bookingRouter.get("/get", getBooking);
-bookingRouter.get("/get/:id", validateBooking, getBookingsbyID);
-bookingRouter.put("/update/:id", validateBooking, updateBooking);
-bookingRouter.delete("/delete/:id", validateBooking, deleteBooking);
+
+bookingRouter.param("id", validateBooking);
+
+bookingRouter.get("/get/:id", getBookingsbyID);
+bookingRouter.put("/update/:id", updateBooking);
+bookingRouter.delete("/delete/:id", deleteBooking);
 
 export default bookingRouter;
