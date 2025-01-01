@@ -24,4 +24,18 @@ export const createClient = async (req,res) => {};
 
 export const updateClient = async (req,res) => {};
 
-export const deleteClient = async (req,res) => {};
+export const deleteClient = async (req,res) => {
+    const { id } = req.params;
+    try {
+        const { data, error } = await supabase.from('clients').delete().eq('client_id',id);
+
+        if(error) {
+            return res.status(500).json({message: 'Internal server error', Error: true});
+        }
+
+        return res.status(204).json({message:'Client deleted', Client: data});
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({message: 'Internal server error', Error: true});
+    }
+};
