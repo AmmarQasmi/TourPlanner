@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import errorHandler from "errorhandler";
+import agentRoute from "./Routes/agentRoute.js";
 const app = express();
 
 const PORT = 5000;
@@ -14,9 +15,7 @@ app.use(errorHandler());
 
 //imported routes.
 
-
-// app.use("/",); //use the router for functionality
-
+app.use("/api/agents",agentRoute); 
 
 
 app.listen(PORT, () => {
