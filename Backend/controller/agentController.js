@@ -1,17 +1,18 @@
 import { supabase } from "../db/connect.js";
 
 export const createAgent = async (req, res) => {
-    const { first_name, last_name, email, phone, region } = req.body;
+    const { first_name, last_name, email, phone, region, passowrd } = req.body;
   
-    if (!first_name || !last_name || !email || !phone || !region) {
-      return res.status(400).json({ error: "first_name, last_name, email, phone, region are required." });
+    if (!first_name || !last_name || !email || !phone || !region || !passowrd) {
+      return res.status(400).json({ error: "first_name, last_name, email, phone, region  and password are required." });
     }
 
     try {
         const { data, error } = await supabase
             .from("agents")
-            .insert([{ first_name, last_name, email, phone, region }])
-            .select();
+            .insert([{ first_name, last_name, email, phone, region, passowrd }])
+            .select()
+            .single();
 
         if (error) {
             console.error("Supabase Error:", error);
@@ -20,7 +21,7 @@ export const createAgent = async (req, res) => {
 
         return res.status(201).json({
             message: "Agent created successfully!",
-            agent: data[0],
+            agent: data,
         });
     } catch (err) {
         console.error(err.message);
