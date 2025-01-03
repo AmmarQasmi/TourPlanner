@@ -10,7 +10,7 @@ export const createAgent = async (req, res) => {
     try {
         const { data, error } = await supabase
             .from("agents")
-            .insert([{ first_name, last_name, email, phone, region, passowrd }])
+            .insert([{ first_name, last_name, email, phone, region, passowrd }]) // password added
             .select()
             .single();
 
