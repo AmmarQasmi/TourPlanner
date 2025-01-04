@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const AgentSignupForm = ({ 
   initialData = {}, 
@@ -141,6 +142,12 @@ const AgentSignupForm = ({
         </div>
 
         <button type="submit" className="btn btn-primary w-full">Sign Up</button>
+        <p className="mt-2 text-sm text-gray-600">
+            Or{' '}
+            <Link to="/agentlogin" className="font-medium text-blue-600 hover:text-blue-500 transition duration-150 ease-in-out">
+              sign in to your existing account
+            </Link>
+          </p>
       </form>
     </div>
   );

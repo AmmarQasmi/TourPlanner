@@ -39,10 +39,9 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/about" className="footer-link">About Us</Link></li>
+              <li><Link to="#about" className="footer-link">About Us</Link></li>
               <li><Link to="/destinations" className="footer-link">Destinations</Link></li>
               <li><Link to="/planner" className="footer-link">Trip Planner</Link></li>
-              <li><Link to="/blog" className="footer-link">Travel Blog</Link></li>
             </ul>
           </div>
 

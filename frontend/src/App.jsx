@@ -1,32 +1,42 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
 import HomeLayout from './components/HomeLayout';
-import AgentSignup from './pages/AgentSignup';
+import AgentSignup, { formAction } from './pages/AgentSignup';
 import Destinations from './pages/Destinations';
 import Rentals from './pages/Rentals';
 import Home from './pages/Home';
 import Hotels from './pages/Hotels';
-import ClientSignup from './pages/clientSignup';
+import ClientSignup from './pages/ClientSignup';
 import ClientLogin from './pages/ClientLogin';
 import AgentLogin from './pages/AgentLogin';
+import { ThemeProvider } from './components/ThemeContext';
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path="/" element={<HomeLayout />}>
-      <Route path="home" element={<Home />} />
-      <Route path="agentsignup" element={<AgentSignup />} />
-      <Route path="agentlogin" element={<AgentLogin />} />
-      <Route path="clientlogin" element={<ClientLogin />} />
-      <Route path="clientsignup" element={<ClientSignup />} />
-      <Route path="destinations" element={<Destinations />} />
-      <Route path="rentals" element={<Rentals />} />
-      <Route path="hotels" element={<Hotels />} />
-    </Route>
-  )
-);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomeLayout />,
+    children: [
+      { path: "/", 
+        index:true ,
+        element: <Home />,
+        action: formAction
+      },
+      { path: "agentsignup", element: <AgentSignup /> },
+      { path: "agentlogin", element: <AgentLogin /> },
+      { path: "clientlogin", element: <ClientLogin /> },
+      { path: "clientsignup", element: <ClientSignup /> },
+      { path: "destinations", element: <Destinations /> },
+      { path: "rentals", element: <Rentals /> },
+      { path: "hotels", element: <Hotels /> },
+    ],
+  },
+]);
+
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return <ThemeProvider >
+    <RouterProvider router={router} />
+  </ThemeProvider>;
 };
 
 export default App;

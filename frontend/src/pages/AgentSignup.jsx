@@ -1,7 +1,7 @@
 import React from 'react';
 import AgentSignupForm from '../components/AgentSignupForm';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import signup from '../assets/signup.svg';
 
 //action will be executed after submitting *this is done by REACT itself*
 
@@ -56,24 +56,27 @@ const AgentSignup = () => {
   };
 
   const customRegions = ['north', 'south', 'east', 'west', 'central'];
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Agent Signup Page</h1>
-      <AgentSignupForm
-        initialData={initialData}
-        regions={customRegions}
-        successRedirect="/dashboard"
-      />
-      <p className="mt-2 text-center text-sm text-gray-600">
-        Or{' '}
-        <Link to="/agentlogin" className="font-medium text-blue-600 hover:text-blue-500 transition duration-150 ease-in-out">
-          sign in to your existing account
-        </Link>
-      </p>
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="w-full lg:w-1/2">
+          <AgentSignupForm
+            initialData={initialData}
+            regions={customRegions}
+            successRedirect="/dashboard"
+          />
+        </div>
+        
+        <div className="hidden lg:block w-full lg:w-1/2">
+          <img
+            src={signup}
+            alt="Travel Agent"
+            className="w-full h-[600px] object-cover rounded-lg shadow-xl"
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
 export default AgentSignup;
-
