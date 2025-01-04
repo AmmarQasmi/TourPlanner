@@ -129,3 +129,43 @@ export const deleteAgent = async (req, res) => {
         return res.status(500).json({ error: "Failed to delete the agent." });
     }
 };
+
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Bad request, email and password are required', Error: true });
+    }
+
+    try {
+        const { data: agent, error: agentError } = await supabase
+            .from('agents')
+            .select('email, password, is_login') 
+            .eq('email', email)
+            .single();  // Ensures only one row is returned
+
+        if (agentError || !agent) {
+            return res.status(404).json({ message: 'User not found', Error: true });
+        }
+
+        // Check if the password matches the stored one
+        if (agent.password !== password) {
+            return res.status(401).json({ message: 'Invalid credentials', Error: true });
+        }
+
+        const { error: updateError } = await supabase
+            .from('agents')
+            .update({ is_login: 'Y' })
+            .eq('email', email);
+
+        if (updateError) {
+            return res.status(500).json({ message: 'Failed to update login status', Error: true });
+        }
+
+        return res.status(200).json({ message: 'Login successful', user: agent });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', Error: true });
+    }
+};
