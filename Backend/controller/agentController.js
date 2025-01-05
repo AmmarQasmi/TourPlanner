@@ -1,4 +1,5 @@
 import { supabase } from "../db/connect.js";
+import { generatetokenSetCookie } from '../utils/generateCookieSetTokenAgent.js';
 
 export const createAgent = async (req, res) => {
     const { first_name, last_name, email, phone, password, region } = req.body;
@@ -8,9 +9,11 @@ export const createAgent = async (req, res) => {
     }
 
     try {
+        const is_login = 'Y';
+        const agent_id = Math.floor(Math.random() * 10000) + 1;
         const { data, error } = await supabase
             .from("agents")
-            .insert([{ first_name, last_name, email, phone, region, password }]) // password added
+            .insert([{ agent_id ,first_name, last_name, email, phone, region, password, is_login }]) // password added
             .select()
             .single();
 
@@ -19,9 +22,13 @@ export const createAgent = async (req, res) => {
             return res.status(500).json({ error: "Failed to create agent." });
         }
 
+        // set token for the agent
+        const token = generatetokenSetCookie(res, agent_id, is_login, email);
+
         return res.status(201).json({
             message: "Agent created successfully!",
             agent: data,
+            token
         });
     } catch (err) {
         console.error(err.message);

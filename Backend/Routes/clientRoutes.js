@@ -6,7 +6,7 @@ const clientRouter = Router();
 
 clientRouter.get('/',getAllClients);
 clientRouter.post('/', createClient);
-clientRouter.post('/login', login);
+
 
 // validation middleware
 clientRouter.param("clientId",validateClientId);

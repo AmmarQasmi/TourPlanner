@@ -9,23 +9,25 @@ import transactionRouter from "./Routes/transactionRoutes.js";
 import destinationRouter from "./Routes/destinationRoutes.js";
 import carRentalRouter from "./Routes/carRentalRoutes.js";
 import hotelRouter from "./Routes/hotels.js";
+import agentAuthRouter from "./Routes/agentauthRoute.js";
 const app = express();
 
 const PORT = 5000;
 
 //middlewares
 app.use(express.json()); //parse json
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // for encoded forms
 app.use(morgan("dev"));
 app.use(cors({
   origin: "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-}));
+})); // allow resource sharing
 app.use(errorHandler());
 
 // all routes go here
+app.use('/api/auth/agents', agentAuthRouter);
 app.use("/api/agents",agentRoute); 
 app.use("/api/clients", clientRouter);
 app.use("/api/bookings",bookingRouter); 
