@@ -10,3 +10,5 @@ hotelRouter.get("/get", getHotel);
 hotelRouter.get("/get/:id", validateHotel, getHotelByID);
 hotelRouter.put("/update/:id", validateHotel, updateHotel);
 hotelRouter.delete("/delete/:id", validateHotel, deleteHotel);
+
+export default hotelRouter;

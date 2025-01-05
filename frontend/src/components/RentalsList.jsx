@@ -7,10 +7,13 @@ const RentalsList = () => {
   useEffect(() => {
     const fetchTopRentals = async () => {
       try {
-        const response = await fetch('/api/rentals/get'); // Adjust endpoint as needed
+        const response = await fetch('http://localhost:5000/api/cars'); 
         const data = await response.json();
-        const topRated = data.filter((rental) => rental.rating > 4);
-        setRentals(topRated.sort(() => 0.5 - Math.random()).slice(0, 5)); // Randomize and limit
+        
+        const availableCars = data.car.filter((rental) => rental.availability_status === 'Available');
+
+        // Randomize and limit to 5 cars
+        setRentals(availableCars.sort(() => 0.5 - Math.random()).slice(0, 5)); 
       } catch (error) {
         console.error('Failed to fetch rentals:', error);
       }
@@ -21,11 +24,11 @@ const RentalsList = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Top Car Rentals</h2>
+      <h2 className="text-2xl font-bold mb-4">Available Top Car Rentals</h2>
       {rentals.length > 0 ? (
-        rentals.map((rental) => <CarRentalCard key={rental.id} rental={rental} />)
+        rentals.map((rental) => <CarRentalCard key={rental.car_id} rental={rental} />)
       ) : (
-        <p>Loading rentals...</p>
+        <p>No available rentals found.</p>
       )}
     </div>
   );

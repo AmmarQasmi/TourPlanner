@@ -8,6 +8,7 @@ import bookingRouter from "./Routes/BookingsRoutes.js";
 import transactionRouter from "./Routes/transactionRoutes.js";
 import destinationRouter from "./Routes/destinationRoutes.js";
 import carRentalRouter from "./Routes/carRentalRoutes.js";
+import hotelRouter from "./Routes/hotels.js";
 const app = express();
 
 const PORT = 5000;
@@ -24,7 +25,9 @@ app.use("/api/clients", clientRouter);
 app.use("/api/bookings",bookingRouter); 
 app.use("/api/transactions", transactionRouter);
 app.use('/api/destinations', destinationRouter);
-app.use('/api/carRent', carRentalRouter);
+app.use('/api/cars', carRentalRouter);
+app.use('/api/hotels', hotelRouter);
+
 app.listen(PORT, () => {
   console.log("Connected to TouristPlanner");
 });
