@@ -1,74 +1,40 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link, Form } from 'react-router-dom';
 
 const AgentSignupForm = ({ 
   initialData = {}, 
   regions = ['north', 'south', 'east', 'west']
 }) => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    password: '',
-    region: '',
-    ...initialData
-  });
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-    if (!formData.password.trim()) newErrors.password = 'Password is required';
-    if (!formData.region) newErrors.region = 'Region is required';
-    return newErrors;
-  };
-
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-base-200 rounded-box">
       <h2 className="text-2xl font-bold mb-6 text-center">Agent Signup</h2>
-      <form method="post" className="space-y-4">
+      <Form method="post" className="space-y-4"> {/* Removed 'action' attribute */}
         <div className="form-control">
-          <label className="label" htmlFor="firstName">
+          <label className="label" htmlFor="first_name">
             <span className="label-text">First Name</span>
           </label>
           <input
             type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
+            id="first_name"
+            name="first_name" // Updated name attribute to match backend
+            defaultValue={initialData.first_name || ''} // Match backend field name
             className="input input-bordered w-full"
             required
           />
-          {errors.firstName && <p className="text-error text-sm mt-1">{errors.firstName}</p>}
         </div>
 
         <div className="form-control">
-          <label className="label" htmlFor="lastName">
+          <label className="label" htmlFor="last_name">
             <span className="label-text">Last Name</span>
           </label>
           <input
             type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
+            id="last_name"
+            name="last_name"
+            defaultValue={initialData.last_name || ''}
             className="input input-bordered w-full"
             required
           />
-          {errors.lastName && <p className="text-error text-sm mt-1">{errors.lastName}</p>}
         </div>
 
         <div className="form-control">
@@ -79,12 +45,10 @@ const AgentSignupForm = ({
             type="email"
             id="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            defaultValue={initialData.email || ''}
             className="input input-bordered w-full"
             required
           />
-          {errors.email && <p className="text-error text-sm mt-1">{errors.email}</p>}
         </div>
 
         <div className="form-control">
@@ -95,12 +59,10 @@ const AgentSignupForm = ({
             type="tel"
             id="phone"
             name="phone"
-            value={formData.phone}
-            onChange={handleChange}
+            defaultValue={initialData.phone || ''}
             className="input input-bordered w-full"
             required
           />
-          {errors.phone && <p className="text-error text-sm mt-1">{errors.phone}</p>}
         </div>
 
         <div className="form-control">
@@ -111,12 +73,10 @@ const AgentSignupForm = ({
             type="password"
             id="password"
             name="password"
-            value={formData.password}
-            onChange={handleChange}
+            defaultValue={initialData.password || ''}
             className="input input-bordered w-full"
             required
           />
-          {errors.password && <p className="text-error text-sm mt-1">{errors.password}</p>}
         </div>
 
         <div className="form-control">
@@ -126,8 +86,7 @@ const AgentSignupForm = ({
           <select
             id="region"
             name="region"
-            value={formData.region}
-            onChange={handleChange}
+            defaultValue={initialData.region || ''}
             className="select select-bordered w-full"
             required
           >
@@ -138,7 +97,6 @@ const AgentSignupForm = ({
               </option>
             ))}
           </select>
-          {errors.region && <p className="text-error text-sm mt-1">{errors.region}</p>}
         </div>
 
         <button type="submit" className="btn btn-primary w-full">Sign Up</button>
@@ -148,7 +106,7 @@ const AgentSignupForm = ({
               sign in to your existing account
             </Link>
           </p>
-      </form>
+      </Form>
     </div>
   );
 };

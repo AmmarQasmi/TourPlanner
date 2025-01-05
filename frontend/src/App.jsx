@@ -10,6 +10,7 @@ import ClientSignup from './pages/ClientSignup';
 import ClientLogin from './pages/ClientLogin';
 import AgentLogin from './pages/AgentLogin';
 import { ThemeProvider } from './components/ThemeContext';
+import Dashboard from './pages/Dashboard';
 
 const router = createBrowserRouter([
   {
@@ -19,10 +20,16 @@ const router = createBrowserRouter([
       { path: "/", 
         index:true ,
         element: <Home />,
+      },
+      { path: "agentsignup", 
+        element: <AgentSignup /> ,
         action: formAction
       },
-      { path: "agentsignup", element: <AgentSignup /> },
       { path: "agentlogin", element: <AgentLogin /> },
+      {
+        path: 'dashboard',
+        element: <Dashboard />
+      },
       { path: "clientlogin", element: <ClientLogin /> },
       { path: "clientsignup", element: <ClientSignup /> },
       { path: "destinations", element: <Destinations /> },

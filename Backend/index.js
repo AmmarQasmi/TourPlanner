@@ -15,8 +15,14 @@ const PORT = 5000;
 
 //middlewares
 app.use(express.json()); //parse json
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
 app.use(errorHandler());
 
 // all routes go here
