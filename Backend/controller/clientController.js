@@ -2,6 +2,8 @@ import { supabase } from '../db/connect.js';
 import { generatetokenSetCookie } from '../utils/generateCookieSetTokenClient.js';
 import { generateToken } from '../utils/generateToken.js';
 import { transporter } from '../nodemailer/nodemailer.config.js';
+import { VERIFICATION_EMAIL_TEMPLATE } from '../nodemailer/emailTemplates.js';
+import { WELCOME_EMAIL_TEMPLATE } from '../nodemailer/emailTemplates.js';
 // returns with order desc wrt to time
 export const getAllClients = async (req, res) => {
     try {
@@ -9,6 +11,10 @@ export const getAllClients = async (req, res) => {
 
         if (error) {
             return res.status(400).json({ message: error.message, Error: true });
+        }
+
+        if(data.length === 0) {
+            return res.status(404).json({message: 'Error 404 Client not found', Error: true, Clients: null})
         }
 
         return res.status(200).json({ message: 'Client found', Clients: data });
@@ -52,9 +58,8 @@ export const createClient = async (req, res) => {
 
         const token = generatetokenSetCookie(res, id, is_login, email);
 
-        // TODO: ADD EMAIL FUNCTIONALITY WHICH SENDS VERIFICATION CODE
         const mailOptions = {
-            from: "tourplanner0@gmail.com",
+            from: "zainrasoolhashmi@gmail.com",
             to: email,
             subject: "Verify your email",
             html: VERIFICATION_EMAIL_TEMPLATE.replace(
@@ -96,11 +101,11 @@ export const verifyEmail = async (req, res) => {
             return res.status(401).json({message: "token expired, please signin again", Error: true});
         }
 
-         const { error: UpdateError }=  await supabase.from('clients').upsert({
+         const { error: UpdateError }=  await supabase.from('clients').update({
             is_verified: true,
             verificationToken: null,
-            tokenExpiry: null
-        });
+            TokenExpiry: null
+        }).eq('email', data.email);
 
         if(UpdateError) {
             return res.status(500).json({message: UpdateError.message, Error: true});
@@ -110,7 +115,7 @@ export const verifyEmail = async (req, res) => {
 
         // send welcome email
         const mailOptions = {
-            from: "tourplanner0@gmail.com",
+            from: "zainrasoolhashmi@gmail.com",
             to: data.email,
             subject: "Welcome On-Board!",
             html: WELCOME_EMAIL_TEMPLATE.replace(/{username}/g, name),

@@ -1,8 +1,12 @@
 import { supabase } from '../db/connect.js';
 import { generatetokenSetCookie } from '../utils/generateCookieSetTokenClient.js';
-
+import jwt from 'jsonwebtoken';
 export const login = async (req, res) => {
     const { email, password } = req.body;
+
+    if(!email || !password) {
+        return res.status(400).json({message: 'Bad request, all fields needed', Error: true});
+    }
 
     try {
         const { data: client, error: existingError } = await supabase.from('clients').select('*').eq('email', email).eq('password', password).single();

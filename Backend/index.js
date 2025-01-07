@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import errorHandler from "errorhandler";
+import cookieParser from "cookie-parser";
 import agentRoute from "./Routes/agentRoute.js";
 import clientRouter from "./Routes/clientRoutes.js";
 import bookingRouter from "./Routes/BookingsRoutes.js";
@@ -18,6 +19,7 @@ const PORT = 5000;
 //middlewares
 app.use(express.json()); //parse json
 app.use(express.urlencoded({ extended: true })); // for encoded forms
+app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors({
   origin: "http://localhost:5173",

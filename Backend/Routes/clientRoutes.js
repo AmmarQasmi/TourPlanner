@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { createClient, deleteClient, getAllClients, getClientById, login, updateClient, verifyEmail } from '../controller/clientController.js';
+import { createClient, deleteClient, getAllClients, getClientById, updateClient, verifyEmail } from '../controller/clientController.js';
 import { validateClientId } from '../Middlewares/clientvalidation.js';
 
 const clientRouter = Router();
 
 clientRouter.get('/',getAllClients);
 clientRouter.post('/', createClient);
-clientRouter.post('/verufy-email', verifyEmail);
+clientRouter.post('/verify-email', verifyEmail);
 
 // validation middleware
 clientRouter.param("clientId",validateClientId);

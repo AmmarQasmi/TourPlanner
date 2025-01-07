@@ -1,4 +1,6 @@
 import { supabase } from "../db/connect.js";
+import jwt from 'jsonwebtoken';
+
 
 export const validateClientId = async (req, res, next, clientId) => {
 
@@ -23,24 +25,56 @@ export const validateClientId = async (req, res, next, clientId) => {
     next();
 };
 
-export const checkLoginStatus = async (req, res, next) => {
-    const { clientId } = req.params;
-  
-    try {
-      const { data, error } = await supabase.from('clients').select('*').eq('client_id', clientId).single();
-  
-      if (error || !data) {
-        return res.status(404).json({ Error: true , message: error.message});
-      }
-      if (data.is_login !== 'Y') {
-        return res.status(401).json({message: 'Please login again', Error: false});
-      }
-  
-      next();
-  
-      return res.status(200).json({message:'Logged in', Error: false});
-    } catch (err) {
-      return res.status(500).json({message: err.message, Error: true});
+// Middleware to Authenticate Client
+export const authenticateClient = async (req, res, next) => {
+  try {
+    // 1. Extract token from cookies
+    const token = req.cookies.client_token; // Extract token from client cookie
+    if (!token) {
+      return res.status(401).json({ message: "Authentication required", Error: true });
     }
-  };
-  
+
+    // 2. Verify and Decode the token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET || "my_secret");
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        console.log('Token expired');
+        return res.status(401).json({ message: 'Session expired. Please log in again.', Error: true });
+      }
+      console.error("Token verification failed:", error);
+      return res.status(403).json({ message: "Invalid or expired token", Error: true });
+    }
+
+    // 3. Fetch client from Supabase using decoded ID
+    const { data: client, error } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('client_id', decoded.id)
+      .single(); // Fetch one record
+
+    // 4. Handle errors or missing client
+    if (error || !client) {
+      return res.status(404).json({ message: "Client not found", Error: true });
+    }
+
+    // 5. Check if client is logged in (is_login must be true)
+    if (!client.is_login) {
+      return res.status(403).json({ message: "Access denied. Please log in again.", Error: true });
+    }
+
+    // 6. Attach client details to the request object
+    req.user = {
+      id: client.client_id,
+      email: client.email,
+      is_agent: false, // Set role for clients
+    };
+
+    // Proceed to the next middleware
+    next();
+  } catch (err) {
+    console.error("Authentication error:", err.message);
+    return res.status(500).json({ message: "Internal server error", Error: true });
+  }
+};
