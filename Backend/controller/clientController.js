@@ -1,5 +1,6 @@
 import { supabase } from '../db/connect.js';
 import { generatetokenSetCookie } from '../utils/generateCookieSetTokenClient.js';
+import { generateToken } from '../utils/generateToken.js';
 import { transporter } from '../nodemailer/nodemailer.config.js';
 // returns with order desc wrt to time
 export const getAllClients = async (req, res) => {
@@ -29,6 +30,7 @@ export const createClient = async (req, res) => {
     }
 
     try {
+        const verificationToken = generateToken();
         const is_login = 'Y';
         const id = Math.floor(Math.random() * 1000) + 1; // random id generation.
         const client = {
@@ -39,7 +41,8 @@ export const createClient = async (req, res) => {
             phone,
             address,
             password,
-            is_login
+            is_login,
+            verificationToken
         };
         const { data, error } = await supabase.from('clients').insert(client).select();
 
@@ -49,10 +52,81 @@ export const createClient = async (req, res) => {
 
         const token = generatetokenSetCookie(res, id, is_login, email);
 
-        return res.status(201).json({ message: 'Client created successfully', Clients: data, Error: false , token});
+        // TODO: ADD EMAIL FUNCTIONALITY WHICH SENDS VERIFICATION CODE
+        const mailOptions = {
+            from: "tourplanner0@gmail.com",
+            to: email,
+            subject: "Verify your email",
+            html: VERIFICATION_EMAIL_TEMPLATE.replace(
+              "{verificationCode}",
+              verificationToken
+            ),
+          };
+
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Email sent: " + info.response);
+            }
+          });
+
+        return res.status(201).json({ message: 'Client created successfully, verification email sent', Clients: data, Error: false , token});
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: 'Internal server error', Error: true });
+    }
+};
+
+export const verifyEmail = async (req, res) => {
+    const { code } = req.body;
+
+    try {
+        const { data, error } = await supabase.from('clients').select('*').eq('verificationToken', code).single();
+
+        if(!data) {
+            return res.status(404).json({message: 'Client not found', Error: true});
+        }
+
+        if(error) {
+            return res.status(500).json({message: error.message, Error: true});
+        }
+
+        if(Date.now() > data.TokenExpiry) {
+            return res.status(401).json({message: "token expired, please signin again", Error: true});
+        }
+
+         const { error: UpdateError }=  await supabase.from('clients').upsert({
+            is_verified: true,
+            verificationToken: null,
+            tokenExpiry: null
+        });
+
+        if(UpdateError) {
+            return res.status(500).json({message: UpdateError.message, Error: true});
+        }
+
+        const name = `${data.first_name} ${data.last_name}`;
+
+        // send welcome email
+        const mailOptions = {
+            from: "tourplanner0@gmail.com",
+            to: data.email,
+            subject: "Welcome On-Board!",
+            html: WELCOME_EMAIL_TEMPLATE.replace(/{username}/g, name),
+          };
+      
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log("Email sent: " + info.response);
+            }
+          });
+
+        return res.status(200).json({message: 'Verification successful!', Error: false});
+    } catch (err) {
+        
     }
 };
 
@@ -61,8 +135,6 @@ export const updateClient = async (req, res) => {
     const { fname, lname, email, phone, address, password } = req.body;
 
     try {
-
-
         // Prepare data for update (excluding undefined fields)
         const updateData = {};
         if (fname) updateData.first_name = fname;

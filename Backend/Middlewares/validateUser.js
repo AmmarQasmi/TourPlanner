@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const authenticateClient = (req, res, next) => {
-  const token = req.cookies.token; // Extract token
+  const token = req.cookies.client_token; // Extract token
 
   if (!token) {
     return res.status(401).json({ message: "Authentication required" });

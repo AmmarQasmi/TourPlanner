@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const authenticaAgent = (req, res, next) => {
-  const token = req.cookies.token; // Extract token
+  const token = req.cookies.agent_token; // Extract token
 
   if (!token) {
     return res.status(401).json({ message: "Authentication required" });
@@ -16,3 +16,7 @@ export const authenticaAgent = (req, res, next) => {
     return res.status(403).json({ message: "Invalid or expired token" });
   }
 };
+
+export const checkTokenExpiry = async (req, res, next) => {
+  const { token } = req.body;
+}

@@ -10,6 +10,7 @@ import destinationRouter from "./Routes/destinationRoutes.js";
 import carRentalRouter from "./Routes/carRentalRoutes.js";
 import hotelRouter from "./Routes/hotels.js";
 import agentAuthRouter from "./Routes/agentauthRoute.js";
+import clientauthRouter from "./Routes/clientauthRoute.js";
 const app = express();
 
 const PORT = 5000;
@@ -28,6 +29,7 @@ app.use(errorHandler());
 
 // all routes go here
 app.use('/api/auth/agents', agentAuthRouter);
+app.use('/api/auth/clients', clientauthRouter);
 app.use("/api/agents",agentRoute); 
 app.use("/api/clients", clientRouter);
 app.use("/api/bookings",bookingRouter); 
