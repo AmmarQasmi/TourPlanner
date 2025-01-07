@@ -31,6 +31,9 @@ export const authenticateAgent = async (req, res, next) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET || "my_secret");
+      if(decoded.is_agent === false) {
+        return res.status(401).json({message: 'Access denied', Error: true});
+      }
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         console.log('Token expired');

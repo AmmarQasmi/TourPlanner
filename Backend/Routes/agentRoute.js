@@ -7,8 +7,11 @@ const agentRouter = Router();
 agentRouter.post("/create", createAgent);
 agentRouter.post("/login", login);
 agentRouter.get("/get", getAgents);
-agentRouter.get("/get/:id", validateAgent, getAgentsByID);
-agentRouter.put("/update/:id", validateAgent, updateAgent);
-agentRouter.delete("/delete/:id", validateAgent, deleteAgent);
+
+agentRouter.param('id', validateAgent);
+
+agentRouter.get("/get/:id", getAgentsByID);
+agentRouter.put("/update/:id", updateAgent);
+agentRouter.delete("/delete/:id", deleteAgent);
 
 export default agentRouter;
