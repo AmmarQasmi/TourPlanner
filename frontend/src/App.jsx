@@ -11,6 +11,10 @@ import ClientLogin from './pages/ClientLogin';
 import AgentLogin from './pages/AgentLogin';
 import { ThemeProvider } from './components/ThemeContext';
 import Dashboard from './pages/Dashboard';
+import ContactUs from './pages/ContactUs';
+import FAQ from './components/FAQ';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import HelpCenter from './components/HelpCenter';
 
 const router = createBrowserRouter([
   {
@@ -35,6 +39,10 @@ const router = createBrowserRouter([
       { path: "destinations", element: <Destinations /> },
       { path: "rentals", element: <Rentals /> },
       { path: "hotels", element: <Hotels /> },
+      { path: "contact", element: <ContactUs /> },
+      { path: "faq", element: <FAQ /> },
+      { path: "privacy", element: <PrivacyPolicy /> },
+      { path: "help", element: <HelpCenter /> },
     ],
   },
 ]);
