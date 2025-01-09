@@ -60,27 +60,29 @@ export const getAgents = async (req, res) => {
 };
 
 export const getAgentsByID = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const { data, error } = await supabase
-            .from("agents")
-            .select("*") // Fetch all agents
-            .eq("agent_id", id);
+  const { id } = req.params;
+  try {
+    // Fetch agent data from the "agents" table based on the provided ID
+    const { data, error } = await supabase
+      .from("agents")
+      .select("*")
+      .eq("agent_id", id)
+      .single(); // Fetch a single row instead of an array
 
-        if (error) {
-            console.error("Supabase Error:", error);
-            return res.status(500).json({ error: "Failed to retrieve agents." });
-        }
-
-        // Return the list of agents
-        return res.status(200).json({
-            message: "Agents retrieved successfully!",
-            agents: data,
-        });
-    } catch (err) {
-        console.error("Error:", err.message);
-        return res.status(500).json({ error: "Failed to retrieve agents." });
+    if (error) {
+      console.error("Supabase Error:", error);
+      return res.status(500).json({ error: "Failed to retrieve agent." });
     }
+
+    // Return the single agent object
+    return res.status(200).json({
+      message: "Agent retrieved successfully!",
+      agent: data, // Send the single agent object
+    });
+  } catch (err) {
+    console.error("Error:", err.message);
+    return res.status(500).json({ error: "Failed to retrieve agent." });
+  }
 };
 
 export const updateAgent = async (req, res) => {
@@ -137,42 +139,42 @@ export const deleteAgent = async (req, res) => {
     }
 };
 
-export const login = async (req, res) => {
-    const { email, password } = req.body;
+// export const login = async (req, res) => {
+//     const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Bad request, email and password are required', Error: true });
-    }
+//     if (!email || !password) {
+//         return res.status(400).json({ message: 'Bad request, email and password are required', Error: true });
+//     }
 
-    try {
-        const { data: agent, error: agentError } = await supabase
-            .from('agents')
-            .select('email, password, is_login') 
-            .eq('email', email)
-            .single();  // Ensures only one row is returned
+//     try {
+//         const { data: agent, error: agentError } = await supabase
+//             .from('agents')
+//             .select('email, password, is_login') 
+//             .eq('email', email)
+//             .single();  // Ensures only one row is returned
 
-        if (agentError || !agent) {
-            return res.status(404).json({ message: 'User not found', Error: true });
-        }
+//         if (agentError || !agent) {
+//             return res.status(404).json({ message: 'User not found', Error: true });
+//         }
 
-        // Check if the password matches the stored one
-        if (agent.password !== password) {
-            return res.status(401).json({ message: 'Invalid credentials', Error: true });
-        }
+//         // Check if the password matches the stored one
+//         if (agent.password !== password) {
+//             return res.status(401).json({ message: 'Invalid credentials', Error: true });
+//         }
 
-        const { error: updateError } = await supabase
-            .from('agents')
-            .update({ is_login: 'Y' })
-            .eq('email', email);
+//         const { error: updateError } = await supabase
+//             .from('agents')
+//             .update({ is_login: 'Y' })
+//             .eq('email', email);
 
-        if (updateError) {
-            return res.status(500).json({ message: 'Failed to update login status', Error: true });
-        }
+//         if (updateError) {
+//             return res.status(500).json({ message: 'Failed to update login status', Error: true });
+//         }
 
-        return res.status(200).json({ message: 'Login successful', user: agent });
+//         return res.status(200).json({ message: 'Login successful', user: agent });
 
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error', Error: true });
-    }
-};
+//     } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({ message: 'Internal server error', Error: true });
+//     }
+// };

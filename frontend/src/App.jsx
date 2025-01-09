@@ -10,30 +10,22 @@ import ClientSignup from './pages/ClientSignup';
 import ClientLogin from './pages/ClientLogin';
 import AgentLogin from './pages/AgentLogin';
 import { ThemeProvider } from './components/ThemeContext';
-import Dashboard from './pages/Dashboard';
 import ContactUs from './pages/ContactUs';
 import FAQ from './components/FAQ';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import HelpCenter from './components/HelpCenter';
+import AgentDashboard from './pages/AgentDashboard';
+
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout />,
     children: [
-      { path: "/", 
-        index:true ,
-        element: <Home />,
-      },
-      { path: "agentsignup", 
-        element: <AgentSignup /> ,
-        action: formAction
-      },
+      { path: "/", index: true, element: <Home />, },
+      { path: "agentsignup", element: <AgentSignup />, action: formAction },
       { path: "agentlogin", element: <AgentLogin /> },
-      {
-        path: 'dashboard',
-        element: <Dashboard />
-      },
+      { path: 'agentdashboard', element: <AgentDashboard /> },
       { path: "clientlogin", element: <ClientLogin /> },
       { path: "clientsignup", element: <ClientSignup /> },
       { path: "destinations", element: <Destinations /> },
@@ -46,7 +38,6 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
 
 const App = () => {
   return <ThemeProvider >

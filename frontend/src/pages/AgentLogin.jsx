@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Make sure axios is imported
+import axios from 'axios';
+import * as jwt_decode from 'jwt-decode'; // Changed this line
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -12,17 +13,21 @@ function Login() {
   const validate = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Reset error on new submission
+    setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/agents/login', {
+      const response = await axios.post('http://localhost:5000/api/auth/agents/login', {
         email,
         password,
+      }, {
+        withCredentials: true
       });
 
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.token) {
         console.log('Login successful');
-        navigate("/home"); // Navigate to the home page after login
+        const decodedToken = jwt_decode.jwtDecode(response.data.token); // Changed this line
+        localStorage.setItem('agent_token', response.data.token);
+        navigate("/agentdashboard");
       }
     } catch (err) {
       setError('Invalid credentials or server error');
@@ -38,7 +43,6 @@ function Login() {
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Welcome to TourPlanner</h2>
         <p className="text-lg text-center text-blue-600 mb-4">Please log in as Agent</p>
         
-        {/* Display error message */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         
         <form onSubmit={validate} className="space-y-4">
@@ -48,8 +52,8 @@ function Login() {
               type="email"
               name="email"
               placeholder='Email'
-              value={email} // Controlled input
-              onChange={(e) => setEmail(e.target.value)} // Update email state
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -61,8 +65,8 @@ function Login() {
               type="password"
               name="password"
               placeholder='Enter Your Password'
-              value={password} // Controlled input
-              onChange={(e) => setPassword(e.target.value)} // Update password state
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
