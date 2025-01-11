@@ -1,6 +1,7 @@
 import { supabase } from '../db/connect.js';
 import { generatetokenSetCookie } from '../utils/generateCookieSetTokenClient.js';
 import jwt from 'jsonwebtoken';
+
 export const login = async (req, res) => {
     const { email, password } = req.body;
 

@@ -15,14 +15,14 @@ function Login() {
         setError(''); 
 
         try {
-            const response = await axios.post('http://localhost:5000/api/clients/login', {
+            const response = await axios.post('http://localhost:5000/api/auth/clients/login', {
                 email,
                 password,
             });
 
             if (response.status === 200) {
                 console.log('Login successful');
-                navigate("/home"); 
+                navigate("/"); 
             }
         } catch (err) {
             setError('Invalid credentials or server error'); 
