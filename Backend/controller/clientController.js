@@ -76,7 +76,7 @@ export const createClient = async (req, res) => {
             }
           });
 
-        return res.status(201).json({ message: 'Client created successfully, verification email sent', Clients: data, Error: false , token});
+        return res.status(201).json({ message: 'Client created successfully, verification email sent', Clients: data, Error: false , token, verificationToken});
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: 'Internal server error', Error: true });
@@ -129,9 +129,9 @@ export const verifyEmail = async (req, res) => {
             }
           });
 
-        return res.status(200).json({message: 'Verification successful!', Error: false});
+        return res.status(200).json({message: 'Verification successful!', Error: false, verified: true});
     } catch (err) {
-        
+        return res.status(500).json({message: 'Internal server error', Error: true, verified: false});
     }
 };
 

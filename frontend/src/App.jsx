@@ -15,6 +15,7 @@ import FAQ from './components/FAQ';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import HelpCenter from './components/HelpCenter';
 import AgentDashboard from './pages/AgentDashboard';
+import VerifyEmail from './pages/VerifyEmail';
 
 
 const router = createBrowserRouter([
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
       { path: 'agentdashboard', element: <AgentDashboard /> },
       { path: "clientlogin", element: <ClientLogin /> },
       { path: "clientsignup", element: <ClientSignup /> },
+      { path: "verify-email", element: <VerifyEmail /> },
       { path: "destinations", element: <Destinations /> },
       { path: "rentals", element: <Rentals /> },
       { path: "hotels", element: <Hotels /> },

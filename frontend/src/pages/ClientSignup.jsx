@@ -45,20 +45,35 @@ const ClientSignup = () => {
     const formErrors = validateForm();
     if (Object.keys(formErrors).length === 0) {
       try {
+        // Only make the signup request
         const response = await axios.post('http://localhost:5000/api/clients', {
-          client_id: undefined, // Let backend handle auto-generated ID
+          client_id: undefined,
           ...formData
         });
+
         if (response.status === 201) {
-          navigate('/home');
+          // Log the response to see what we're getting
+          console.log('Signup Response:', response.data);
+          
+          // Navigate with the necessary state
+          navigate('/verify-email', {
+            state: {
+              email: formData.email,
+              verificationToken: response.data.verificationToken,
+              message: "Please check your email for the verification code"
+            }
+          });
         }
       } catch (error) {
         console.error('Error submitting form:', error);
+        setErrors({ 
+          submit: error.response?.data?.message || 'An error occurred during signup. Please try again.' 
+        });
       }
     } else {
       setErrors(formErrors);
     }
-  };
+};
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 border">
