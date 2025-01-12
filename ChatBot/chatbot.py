@@ -3,6 +3,11 @@ import requests  # For making HTTP requests to the Hugging Face API
 import time  # To pause execution between retries
 from flask_cors import CORS  # Import CORS
 
+from dotenv import load_dotenv
+import os
+load_dotenv()  # Load variables from .env file
+
+
 app = Flask(__name__)  # Create a Flask app instance
 
 # Enable CORS for the /chat route, allowing only requests from the React app
@@ -10,7 +15,10 @@ CORS(app, resources={r"/chat": {"origins": "http://localhost:5173"}})
 
 # Hugging Face API details
 HF_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill" 
-HF_API_TOKEN = "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"  # Your Hugging Face API token
+
+# HF_API_TOKEN = "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"  # Your Hugging Face API token
+HF_API_TOKEN = os.getenv("HF_API_TOKEN")  # Access the variable
+
 
 # Setting up the authorization header with your token
 headers = {"Authorization": f"Bearer {HF_API_TOKEN}"}
