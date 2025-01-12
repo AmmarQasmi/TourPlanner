@@ -1,8 +1,11 @@
 import React from 'react'
+import FloatingChatbot from '../components/FloatingChatbot'
 
 function Destinations() {
   return (
-    <div>Destinations</div>
+    <div>Destinations
+      <FloatingChatbot />
+    </div>
   )
 }
 
