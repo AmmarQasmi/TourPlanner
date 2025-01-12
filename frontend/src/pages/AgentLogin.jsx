@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import * as jwt_decode from 'jwt-decode'; // Changed this line
+import * as jwt_decode from 'jwt-decode'; 
 
 function Login() {
   const [email, setEmail] = useState('');
