@@ -13,8 +13,8 @@ export const getAllClients = async (req, res) => {
             return res.status(400).json({ message: error.message, Error: true });
         }
 
-        if(data.length === 0) {
-            return res.status(404).json({message: 'Error 404 Client not found', Error: true, Clients: null})
+        if (data.length === 0) {
+            return res.status(404).json({ message: 'Error 404 Client not found', Error: true, Clients: null })
         }
 
         return res.status(200).json({ message: 'Client found', Clients: data });
@@ -25,7 +25,34 @@ export const getAllClients = async (req, res) => {
 };
 
 export const getClientById = async (req, res) => {
-    return res.status(200).json({ message: 'Client found', Clients: req.client });
+    const { id } = req.params;
+
+    // Log the client_id to debug
+    console.log('Received client_id:', id);
+    try {
+        const { data, error } = await supabase
+            .from('clients')
+            .select('*')
+            .eq('client_id', id)
+            .single();
+
+        if (error) {
+            console.error("Supabase Error:", error);
+            return res.status(500).json({ message: 'Error fetching client data', error });
+        }
+
+        if (data) {
+            return res.status(200).json({
+                message: 'Client found',
+                Clients: data,
+            });
+        } else {
+            return res.status(404).json({ message: 'Client not found' });
+        }
+    } catch (err) {
+        console.error('Error fetching client by ID:', err);
+        return res.status(500).json({ message: 'Failed to fetch client data' });
+    }
 };
 
 export const createClient = async (req, res) => {
@@ -63,20 +90,20 @@ export const createClient = async (req, res) => {
             to: email,
             subject: "Verify your email",
             html: VERIFICATION_EMAIL_TEMPLATE.replace(
-              "{verificationCode}",
-              verificationToken
+                "{verificationCode}",
+                verificationToken
             ),
-          };
+        };
 
-          transporter.sendMail(mailOptions, (error, info) => {
+        transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-              console.log(error);
+                console.log(error);
             } else {
-              console.log("Email sent: " + info.response);
+                console.log("Email sent: " + info.response);
             }
-          });
+        });
 
-        return res.status(201).json({ message: 'Client created successfully, verification email sent', Clients: data, Error: false , token, verificationToken});
+        return res.status(201).json({ message: 'Client created successfully, verification email sent', Clients: data, Error: false, token, verificationToken });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: 'Internal server error', Error: true });
@@ -89,26 +116,26 @@ export const verifyEmail = async (req, res) => {
     try {
         const { data, error } = await supabase.from('clients').select('*').eq('verificationToken', code).single();
 
-        if(!data) {
-            return res.status(404).json({message: 'Client not found', Error: true});
+        if (!data) {
+            return res.status(404).json({ message: 'Client not found', Error: true });
         }
 
-        if(error) {
-            return res.status(500).json({message: error.message, Error: true});
+        if (error) {
+            return res.status(500).json({ message: error.message, Error: true });
         }
 
-        if(Date.now() > data.TokenExpiry) {
-            return res.status(401).json({message: "token expired, please signin again", Error: true});
+        if (Date.now() > data.TokenExpiry) {
+            return res.status(401).json({ message: "token expired, please signin again", Error: true });
         }
 
-         const { error: UpdateError }=  await supabase.from('clients').update({
+        const { error: UpdateError } = await supabase.from('clients').update({
             is_verified: true,
             verificationToken: null,
             TokenExpiry: null
         }).eq('email', data.email);
 
-        if(UpdateError) {
-            return res.status(500).json({message: UpdateError.message, Error: true});
+        if (UpdateError) {
+            return res.status(500).json({ message: UpdateError.message, Error: true });
         }
 
         const name = `${data.first_name} ${data.last_name}`;
@@ -119,19 +146,19 @@ export const verifyEmail = async (req, res) => {
             to: data.email,
             subject: "Welcome On-Board!",
             html: WELCOME_EMAIL_TEMPLATE.replace(/{username}/g, name),
-          };
-      
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log("Email sent: " + info.response);
-            }
-          });
+        };
 
-        return res.status(200).json({message: 'Verification successful!', Error: false, verified: true});
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("Email sent: " + info.response);
+            }
+        });
+
+        return res.status(200).json({ message: 'Verification successful!', Error: false, verified: true });
     } catch (err) {
-        return res.status(500).json({message: 'Internal server error', Error: true, verified: false});
+        return res.status(500).json({ message: 'Internal server error', Error: true, verified: false });
     }
 };
 

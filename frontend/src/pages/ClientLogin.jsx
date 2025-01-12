@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios
+import * as jwt_decode from 'jwt-decode';
+
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -12,23 +14,27 @@ function Login() {
     const validate = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(''); 
+        setError('');
 
         try {
             const response = await axios.post('http://localhost:5000/api/auth/clients/login', {
                 email,
                 password,
+            }, {
+                withCredentials: true
             });
 
-            if (response.status === 200) {
+            if (response.status === 200 && response.data.token) {
                 console.log('Login successful');
-                navigate("/"); 
+                const decodedToken = jwt_decode.jwtDecode(response.data.token);
+                localStorage.setItem('client_token', response.data.token);
+                navigate("/clientDashboard");
             }
         } catch (err) {
-            setError('Invalid credentials or server error'); 
+            setError('Invalid credentials or server error');
             console.error('Login failed:', err);
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 

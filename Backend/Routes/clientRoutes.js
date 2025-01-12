@@ -11,7 +11,7 @@ clientRouter.post('/verify-email', verifyEmail);
 // validation middleware
 clientRouter.param("clientId",validateClientId);
 
-clientRouter.get("/:clientId", getClientById);
+clientRouter.get("/:id", getClientById);
 clientRouter.put("/:clientId", updateClient);
 clientRouter.delete("/:clientId",deleteClient);
 
