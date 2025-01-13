@@ -14,7 +14,7 @@ const RentalsList = () => {
         const data = await response.json();
         
         const availableCars = data.car.filter((rental) => rental.availability_status === 'Available');
-        setRentals(availableCars.sort(() => 0.5 - Math.random()).slice(0, 5)); 
+        setRentals(availableCars);
       } catch (error) {
         console.error('Failed to fetch rentals:', error);
       } finally {

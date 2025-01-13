@@ -15,7 +15,7 @@ const HotelsList = () => {
 
         if (data.hotels && Array.isArray(data.hotels)) {
           const topRated = data.hotels.filter((hotel) => hotel.rating > 4);
-          setHotels(topRated.sort(() => 0.5 - Math.random()).slice(0, 5));
+          setHotels(topRated);
         } else {
           console.error('Expected an array under data.hotels but got:', data);
         }
