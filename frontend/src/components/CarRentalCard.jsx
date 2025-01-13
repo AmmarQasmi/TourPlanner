@@ -1,20 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from './ThemeContext';
 
 const CarRentalCard = ({ rental }) => {
+  const { theme } = useTheme();
+
   return (
-    <div className="p-4 mb-4 shadow rounded bg-white w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+    <div className={`p-4 mb-4 rounded w-full transform transition-all duration-300
+      hover:scale-105 cursor-pointer
+      ${theme === 'dark' 
+        ? 'bg-gray-800 text-white shadow-lg hover:shadow-2xl hover:shadow-blue-500/20' 
+        : 'bg-white text-gray-900 shadow-lg hover:shadow-2xl hover:shadow-gray-400/50'}`}>
       <img
         src={rental.image}
         alt={`${rental.make} ${rental.model}`}
         className="w-full h-48 object-fit rounded mb-4"
       />
       <h3 className="text-xl font-semibold">{rental.make} {rental.model} ({rental.year})</h3>
-      <p className="text-gray-600">Capacity: {rental.capacity} people</p>
-      <p className="text-gray-600">Rental Price: ${rental.rental_price_per_day} / day</p>
-      <p className="text-gray-600">Status: {rental.availability_status}</p>
+      <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+        Capacity: {rental.capacity} people
+      </p>
+      <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+        Rental Price: ${rental.rental_price_per_day} / day
+      </p>
+      <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+        Status: {rental.availability_status}
+      </p>
       <br />
-      <Link to="/" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">
+      <Link 
+        to="/" 
+        className={`inline-block px-4 py-2 rounded mt-4 transition-all duration-300
+          ${theme === 'dark' 
+            ? 'bg-blue-500 text-white hover:bg-blue-700 transform hover:scale-105' 
+            : 'bg-blue-600 text-white hover:bg-blue-800 transform hover:scale-105'}`}
+      >
         Book Now
       </Link>
     </div>
