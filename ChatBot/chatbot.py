@@ -11,7 +11,7 @@ load_dotenv()  # Load variables from .env file
 app = Flask(__name__)  # Create a Flask app instance
 
 # Enable CORS for the /chat route, allowing only requests from the React app
-CORS(app, resources={r"/chat": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/chat": {"origins": ["http://localhost:5173", "http://localhost:5001"]}})
 
 # Hugging Face API details
 HF_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill" 
@@ -69,4 +69,4 @@ def chat():
 
 if __name__ == "__main__":
     print("Starting chatbot backend server...")  # Message when starting the app
-    app.run(debug=True)  # Run the Flask app in debug mode
+    app.run(debug=True, port=5001)  # Changed port to 5001
