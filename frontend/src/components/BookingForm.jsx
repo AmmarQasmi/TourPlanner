@@ -92,24 +92,8 @@ const BookingForm = () => {
       const selectedHotel = formData.hotel_id ? hotels.find(h => h.hotel_id === parseInt(formData.hotel_id)) : null;
       const selectedCar = formData.car_id ? cars.find(c => c.car_id === parseInt(formData.car_id)) : null;
 
-      // Debug logs for cost calculation
-      console.log('Destination Cost:', selectedDestination.average_cost);
-      console.log('Car Price:', selectedCar?.rental_price_per_day);
-
-      // Calculate individual costs
-      const destinationCost = Number(selectedDestination.average_cost) || 0;
-      const hotelCost = 0;
-      const carCost = selectedCar ? Number(selectedCar.rental_price_per_day) : 0;
-
       // Calculate total
-      const total = destinationCost + hotelCost + carCost;
-
-      console.log('Total Cost Breakdown:', {
-        destinationCost,
-        hotelCost,
-        carCost,
-        total
-      });
+      const total = Number(selectedDestination.average_cost) || 0;
 
       // Create booking
       const response = await fetch('http://localhost:5000/api/bookings/create', {
@@ -119,8 +103,8 @@ const BookingForm = () => {
         },
         body: JSON.stringify({
           destination_id: parseInt(formData.destination_id),
-          hotel_id: formData.hotel_id ? parseInt(formData.hotel_id) : null,
-          car_id: formData.car_id ? parseInt(formData.car_id) : null,
+          hotel_id: selectedHotel ? parseInt(formData.hotel_id) : null,
+          car_id: selectedCar ? parseInt(formData.car_id) : null,
           client_id: clientId,
           agent_id: selectedAgent.agent_id,
           status: 'Pending',
@@ -132,6 +116,11 @@ const BookingForm = () => {
 
       if (!response.ok) {
         throw new Error(bookingData.message || 'Failed to create booking');
+      }
+
+      // Update car status to 'Rented'
+      if (selectedCar) {
+        await updateCarStatus(selectedCar.car_id, 'Rented');
       }
 
       navigate('/booking-info', { 
@@ -147,6 +136,27 @@ const BookingForm = () => {
     } catch (error) {
       console.error('Error creating booking:', error);
       alert(error.message || 'Failed to create booking. Please try again.');
+    }
+  };
+
+  const updateCarStatus = async (carId, status) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cars/${carId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          availability_status: status
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update car status');
+      }
+    } catch (error) {
+      console.error('Error updating car status:', error);
+      alert('Failed to update car status. Please try again.');
     }
   };
 
