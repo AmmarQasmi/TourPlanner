@@ -23,19 +23,8 @@ const CarRentalCard = ({ rental }) => {
       <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
         Rental Price: ${rental.rental_price_per_day} / day
       </p>
-      <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-        Status: {rental.availability_status}
-      </p>
+
       <br />
-      <Link 
-        to="/" 
-        className={`inline-block px-4 py-2 rounded mt-4 transition-all duration-300
-          ${theme === 'dark' 
-            ? 'bg-blue-500 text-white hover:bg-blue-700 transform hover:scale-105' 
-            : 'bg-blue-600 text-white hover:bg-blue-800 transform hover:scale-105'}`}
-      >
-        Book Now
-      </Link>
     </div>
   );
 };

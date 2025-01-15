@@ -6,13 +6,13 @@ import { authenticateUser } from "../Middlewares/dualValidation.js";
 
 const bookingRouter = Router();
 
-bookingRouter.post("/create", authenticateClient ,createBooking);
-bookingRouter.get("/get", authenticateUser,getBooking);
+bookingRouter.post("/create" ,createBooking);
+bookingRouter.get("/get",getBooking);
 
 bookingRouter.param("id", validateBooking);
 
 bookingRouter.get("/get/:id" ,getBookingsbyID);
-bookingRouter.put("/update/:id", authenticateUser,updateBooking);
-bookingRouter.delete("/delete/:id", authenticateUser,deleteBooking);
+bookingRouter.put("/update/:id",updateBooking);
+bookingRouter.delete("/delete/:id",deleteBooking);
 
 export default bookingRouter;

@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTheme } from './ThemeContext';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,6 +10,24 @@ const Header = () => {
   const [isLoginMenuOpen, setIsLoginMenuOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  
+  // Get auth state
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const userRole = useSelector(state => state.auth.userRole);
+  const isClient = userRole === 'client';
+
+  const handleBookNow = (e) => {
+    e.preventDefault();
+    if (!isLoggedIn || !isClient) {
+      navigate('/clientlogin', { 
+        state: { from: '/booking/new' },
+        replace: true 
+      });
+      return;
+    }
+    navigate('/booking/new');
+  };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const togglePlannerMenu = () => setIsPlannerMenuOpen(!isPlannerMenuOpen);
@@ -39,9 +58,16 @@ const Header = () => {
             >
               Destinations
             </Link>
+            <Link
+              to={isLoggedIn && isClient ? "/booking/new" : "/clientlogin"}
+              onClick={handleBookNow}
+              className="btn btn-ghost btn-sm normal-case"
+            >
+              Book Now
+            </Link>
             <div className="dropdown dropdown-hover">
               <label tabIndex={0} className="btn btn-ghost btn-sm normal-case m-1">
-                Plan Trip
+                Explore
               </label>
               <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                 <li><Link to="/hotels">Hotel Book</Link></li>
@@ -98,11 +124,11 @@ const Header = () => {
         <div className={`lg:hidden ${isMenuOpen ? 'block' : 'hidden'} absolute top-full left-0 right-0 bg-base-100 shadow-md z-20`}>
           <div className="flex flex-col space-y-4 p-4">
             <Link
-              to="/home"
+              to={isLoggedIn && isClient ? "/booking/new" : "/clientlogin"}
+              onClick={handleBookNow}
               className="btn btn-ghost btn-sm normal-case justify-start"
-              onClick={() => setIsMenuOpen(false)}
             >
-              Home
+              Book Now
             </Link>
             <Link
               to="/destinations"
@@ -114,7 +140,7 @@ const Header = () => {
             <div className="collapse collapse-arrow">
               <input type="checkbox" checked={isPlannerMenuOpen} onChange={togglePlannerMenu} /> 
               <div className="collapse-title btn btn-ghost btn-sm normal-case justify-start">
-                Plan Trip
+                Explore
               </div>
               <div className="collapse-content">
                 <Link

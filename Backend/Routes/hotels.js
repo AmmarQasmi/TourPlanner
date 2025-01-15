@@ -7,7 +7,7 @@ import { authenticateAgent } from "../Middlewares/agentValidation.js";
 const hotelRouter = Router();
 
 hotelRouter.post("/create", createHotel);
-hotelRouter.get("/get", authenticateAgent,getHotel);
+hotelRouter.get("/get",getHotel);
 
 hotelRouter.param('id', validateHotel);
 

@@ -14,12 +14,35 @@ function ClientDashboard() {
 
     const navigate = useNavigate();
 
+    const formatDate = (dateString) => {
+        try {
+            // First try to create a valid date object
+            const date = new Date(dateString);
+            
+            // Check if the date is valid
+            if (isNaN(date.getTime())) {
+                return 'Invalid Date';
+            }
+
+            // Format the date
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        } catch (error) {
+            console.error('Date formatting error:', error);
+            return 'Invalid Date';
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = localStorage.getItem('client_token');
-                console.log('Token from localStorage:', token);
-
                 if (!token) {
                     navigate('/login');
                     return;
@@ -27,29 +50,25 @@ function ClientDashboard() {
 
                 const decodedToken = jwt_decode.jwtDecode(token);
                 const clientId = decodedToken.id;
-                console.log('Decoded Token:', decodedToken);
-                console.log('Client ID:', clientId);
 
                 const config = {
                     headers: { Authorization: `Bearer ${token}` },
                     withCredentials: true
                 };
 
-                const [clientResponse, bookingsResponse, hotelsResponse, carsResponse] = await Promise.all([
+                // Fetch all required data
+                const [clientResponse, bookingsResponse] = await Promise.all([
                     axios.get(`http://localhost:5000/api/clients/${clientId}`, config),
-                    // axios.get(`http://localhost:5000/api/bookings/${clientId}`, config),
-                    // axios.get(`http://localhost:5000/api/hotels/booked/${clientId}`, config),
-                    // axios.get(`http://localhost:5000/api/cars/booked/${clientId}`, config)
+                    axios.get('http://localhost:5000/api/bookings/get', config)
                 ]);
 
-                console.log("API Response:", clientResponse.data);
-
                 const clientData = clientResponse.data.Clients;
+                const allBookings = bookingsResponse.data.bookings;
+                const clientBookings = allBookings.filter(booking => booking.client_id === clientId);
+
                 if (clientData && clientData.client_id === Number(clientId)) {
                     setClientInfo(clientData);
-                    // setBookings(bookingsResponse.data.bookings || []);
-                    // setBookedHotels(hotelsResponse.data.hotels || []);
-                    // setBookedCars(carsResponse.data.cars || []);
+                    setBookings(clientBookings);
                 } else {
                     setError('Client not found.');
                 }
@@ -67,6 +86,12 @@ function ClientDashboard() {
 
         fetchData();
     }, [navigate]);
+
+    useEffect(() => {
+        if (bookings.length > 0) {
+            console.log('Raw date value:', bookings[0].booking_date);
+        }
+    }, [bookings]);
 
     if (loading) {
         return (
@@ -115,33 +140,32 @@ function ClientDashboard() {
                         )}
                     </div>
 
-                    {/* Quick Stats Card */}
+                    {/* Stats Card */}
                     <div className="bg-white rounded-lg shadow-md p-6">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Quick Stats</h2>
+                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Booking Stats</h2>
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <span className="text-gray-600">Total Bookings</span>
                                 <span className="font-semibold text-blue-500">{bookings.length}</span>
                             </div>
+                            
                             <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Active Bookings</span>
-                                <span className="font-semibold text-green-500">
-                                    {bookings.filter(booking => booking.status === 'Active').length}
+                                <span className="text-gray-600">Pending Bookings</span>
+                                <span className="font-semibold text-yellow-500">
+                                    {bookings.filter(booking => booking.status === 'Pending').length}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Booked Hotels</span>
-                                <span className="font-semibold text-purple-500">{bookedHotels.length}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Booked Cars</span>
-                                <span className="font-semibold text-orange-500">{bookedCars.length}</span>
+                                <span className="text-gray-600">Completed Bookings</span>
+                                <span className="font-semibold text-purple-500">
+                                    {bookings.filter(booking => booking.status === 'Completed').length}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Recent Bookings Card */}
+                {/* Recent Bookings Table */}
                 <div className="mt-8 bg-white rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-semibold mb-4 text-gray-700">Recent Bookings</h2>
                     {bookings.length > 0 ? (
@@ -150,42 +174,30 @@ function ClientDashboard() {
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking ID</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination ID</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {bookings.slice(0, 5).map((booking) => (
+                                    {bookings.map((booking) => (
                                         <tr key={booking.booking_id}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.booking_id}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#{booking.booking_id}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{booking.destination_id}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {booking.hotel_id ? (
-                                                    <span className="flex items-center">
-                                                        <Building className="w-4 h-4 mr-2 text-blue-500" />
-                                                        Hotel
-                                                    </span>
-                                                ) : (
-                                                    <span className="flex items-center">
-                                                        <Car className="w-4 h-4 mr-2 text-green-500" />
-                                                        Car
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                <span className="flex items-center">
-                                                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                                                    {new Date(booking.booking_date).toLocaleDateString()}
-                                                </span>
+                                                {formatDate(booking.booking_date)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                    booking.status === 'Active' ? 'bg-green-100 text-green-800' : 
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    ${booking.status === 'Active' ? 'bg-green-100 text-green-800' : 
                                                     booking.status === 'Completed' ? 'bg-blue-100 text-blue-800' : 
-                                                    'bg-yellow-100 text-yellow-800'
-                                                }`}>
+                                                    'bg-yellow-100 text-yellow-800'}`}>
                                                     {booking.status}
                                                 </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                ${booking.total_amount}
                                             </td>
                                         </tr>
                                     ))}
@@ -194,52 +206,6 @@ function ClientDashboard() {
                         </div>
                     ) : (
                         <p className="text-gray-500">No bookings found.</p>
-                    )}
-                </div>
-
-                {/* Booked Hotels Card */}
-                <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Booked Hotels</h2>
-                    {bookedHotels.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {bookedHotels.map((hotel) => (
-                                <div key={hotel.hotel_id} className="border rounded-lg p-4 flex flex-col">
-                                    <div className="flex items-center mb-2">
-                                        <Building className="w-5 h-5 mr-2 text-blue-500" />
-                                        <h3 className="font-semibold text-lg">{hotel.name}</h3>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mb-1">Location: {hotel.location}</p>
-                                    <p className="text-sm text-gray-600 mb-1">Check-in: {new Date(hotel.check_in_date).toLocaleDateString()}</p>
-                                    <p className="text-sm text-gray-600 mb-1">Check-out: {new Date(hotel.check_out_date).toLocaleDateString()}</p>
-                                    <p className="text-sm text-gray-600">Guests: {hotel.guests}</p>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-gray-500">No booked hotels found.</p>
-                    )}
-                </div>
-
-                {/* Booked Cars Card */}
-                <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Booked Cars</h2>
-                    {bookedCars.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {bookedCars.map((car) => (
-                                <div key={car.car_id} className="border rounded-lg p-4 flex flex-col">
-                                    <div className="flex items-center mb-2">
-                                        <Car className="w-5 h-5 mr-2 text-green-500" />
-                                        <h3 className="font-semibold text-lg">{car.make} {car.model}</h3>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mb-1">Year: {car.year}</p>
-                                    <p className="text-sm text-gray-600 mb-1">Pickup Date: {new Date(car.pickup_date).toLocaleDateString()}</p>
-                                    <p className="text-sm text-gray-600 mb-1">Return Date: {new Date(car.return_date).toLocaleDateString()}</p>
-                                    <p className="text-sm text-gray-600">Daily Rate: ${car.rental_price_per_day}</p>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-gray-500">No booked cars found.</p>
                     )}
                 </div>
             </div>

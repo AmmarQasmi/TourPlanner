@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route, Routes } from 'react-router-dom';
 import HomeLayout from './components/HomeLayout';
 import AgentSignup, { formAction } from './pages/AgentSignup';
 import Destinations from './pages/Destinations';
@@ -17,6 +17,11 @@ import HelpCenter from './components/HelpCenter';
 import AgentDashboard from './pages/AgentDashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import ClientDashboard from './pages/ClientDashboard';
+import BookingForm from './components/BookingForm';
+import BookingInfo from './components/BookingInfo';
+import ProtectedRoute from './components/ProtectedRoute';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 
 const router = createBrowserRouter([
@@ -41,12 +46,24 @@ const router = createBrowserRouter([
       { path: "help", element: <HelpCenter /> },
     ],
   },
+  { 
+    path: "/booking/new", 
+    element: <ProtectedRoute><BookingForm /></ProtectedRoute> 
+  },
+  { 
+    path: "/booking-info", 
+    element: <ProtectedRoute><BookingInfo /></ProtectedRoute> 
+  },
 ]);
 
 const App = () => {
-  return <ThemeProvider >
-    <RouterProvider router={router} />
-  </ThemeProvider>;
+  return (
+    <Provider store={store}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </Provider>
+  );
 };
 
 export default App;

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from './ThemeContext';
+import { useSelector } from 'react-redux';
 
 const DestinationCard = ({ destination }) => {
   const { theme } = useTheme();
@@ -27,17 +28,8 @@ const DestinationCard = ({ destination }) => {
       </p>
       <div className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mb-4`}>
         <p>Duration: {destination.days} days</p>
-        <p>Cost: ${destination.cost}</p>
+        <p>Cost: ${destination.average_cost}</p>
       </div>
-      <Link 
-        to={`/destination/${destination.destination_id}`}
-        className={`inline-block px-4 py-2 rounded mt-4 transition-all duration-300
-          ${theme === 'dark' 
-            ? 'bg-blue-500 text-white hover:bg-blue-700 transform hover:scale-105' 
-            : 'bg-blue-600 text-white hover:bg-blue-800 transform hover:scale-105'}`}
-      >
-        Explore More
-      </Link>
     </div>
   );
 };
