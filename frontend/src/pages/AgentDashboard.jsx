@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import * as jwt_decode from 'jwt-decode';
-import { User, Hotel, Car, BookOpen, DollarSign, Plus, LogOut, ChevronDown, ChevronUp, Search, Bell, Trash2 } from 'lucide-react';
+import { User, Hotel, Car, BookOpen, DollarSign, Plus, ChevronDown, ChevronUp, Search, Bell, Trash2 } from 'lucide-react';
 
 const AgentDashboard = () => {
   const [agentInfo, setAgentInfo] = useState(null);
