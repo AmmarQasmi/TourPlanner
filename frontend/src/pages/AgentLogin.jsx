@@ -28,6 +28,7 @@ function Login() {
         const decodedToken = jwt_decode.jwtDecode(response.data.token); // Changed this line
         localStorage.setItem('agent_token', response.data.token);
         navigate("/agentdashboard");
+        window.location.reload();
       }
     } catch (err) {
       setError('Invalid credentials or server error');

@@ -230,11 +230,6 @@ const AgentDashboard = () => {
     }
   };
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem('agent_token');
-  //   navigate('/login');
-  // };
-
   const renderDashboard = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <DashboardCard title="Total Clients" value={clients.length} icon={<User />} />
@@ -516,21 +511,21 @@ const AgentDashboard = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <BookingSection 
-              title="Pending Bookings" 
-              bookings={pendingBookings} 
+            <BookingSection
+              title="Pending Bookings"
+              bookings={pendingBookings}
               handleUpdateBooking={handleUpdateBooking}
               showActions={true}
             />
-            <BookingSection 
-              title="Confirmed Bookings" 
-              bookings={confirmedBookings} 
+            <BookingSection
+              title="Confirmed Bookings"
+              bookings={confirmedBookings}
               handleUpdateBooking={handleUpdateBooking}
               showActions={false}
             />
-            <BookingSection 
-              title="Cancelled Bookings" 
-              bookings={cancelledBookings} 
+            <BookingSection
+              title="Cancelled Bookings"
+              bookings={cancelledBookings}
               handleUpdateBooking={handleUpdateBooking}
               showActions={false}
             />
@@ -636,6 +631,14 @@ const AgentDashboard = () => {
       <div className="w-64 bg-white shadow-md">
         <div className="p-4">
           <h1 className="text-2xl font-bold text-gray-800">Agent Dashboard</h1>
+          {agentInfo && (
+            <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+              <h2 className="text-lg font-semibold mb-2">Agent Info</h2>
+              <p><strong>Name:</strong> {agentInfo.first_name} {agentInfo.last_name}</p>
+              <p><strong>Email:</strong> {agentInfo.email}</p>
+              <p><strong>Region:</strong> {agentInfo.region}</p>
+            </div>
+          )}
         </div>
         <nav className="mt-4">
           <a
@@ -696,13 +699,6 @@ const AgentDashboard = () => {
                 <span className="sr-only">View notifications</span>
                 <Bell className="h-6 w-6" />
               </button>
-              {/* <button
-                onClick={handleLogout}
-                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </button> */}
             </div>
           </div>
         </header>
@@ -716,7 +712,7 @@ const AgentDashboard = () => {
           ) : (
             <>
               {confirmationMessage && <div className="text-center text-green-500 mb-4">{confirmationMessage}</div>}
-              
+
               {activeTab === 'dashboard' && renderDashboard()}
               {activeTab === 'clients' && renderClients()}
               {activeTab === 'hotels' && renderHotels()}

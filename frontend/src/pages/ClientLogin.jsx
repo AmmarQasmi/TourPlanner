@@ -33,7 +33,7 @@ const ClientLogin = () => {
       if (response.status === 200 && response.data.token) {
         const decodedToken = jwt_decode.jwtDecode(response.data.token);
         localStorage.setItem('client_token', response.data.token);
-        
+
         // Update Redux state with user info
         dispatch(setCredentials({
           userId: decodedToken.id,
@@ -47,6 +47,8 @@ const ClientLogin = () => {
         } else {
           navigate('/clientDashboard', { replace: true });
         }
+        window.location.reload();
+
       }
     } catch (err) {
       setError('Invalid credentials or server error');
