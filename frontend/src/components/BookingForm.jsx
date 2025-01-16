@@ -112,6 +112,9 @@ const BookingForm = () => {
         }),
       });
 
+      console.log(formData.hotel_id);
+      console.log(formData.car_id);
+
       const bookingData = await response.json();
 
       if (!response.ok) {

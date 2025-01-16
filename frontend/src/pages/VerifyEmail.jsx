@@ -46,7 +46,7 @@ const VerifyEmail = () => {
             });
 
             if (!response.data.Error) {
-                navigate('/home'); // TODO: redirect to user dashboard
+                navigate('/'); // TODO: redirect to user dashboard
             }
         } catch (error) {
             console.error('Verification error:', error);

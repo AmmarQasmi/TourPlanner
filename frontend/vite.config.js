@@ -10,6 +10,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['jwt-decode'], // Add jwt-decode to the optimization list
+    include: ['jwt-decode', 'react-redux'],
   },
 });
